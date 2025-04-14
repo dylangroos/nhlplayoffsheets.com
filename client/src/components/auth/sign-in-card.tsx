@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useState, FormEvent } from "react";
-import { signIn, signUp } from '@/lib/auth';
+import { useAuth } from '@/lib/auth';
 import { useNavigate } from 'react-router-dom';
 
 // Validation functions
@@ -41,6 +41,7 @@ export function SignInCard() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { signIn, signUp } = useAuth();
 
   const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -122,6 +123,7 @@ export function SignInCard() {
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
+
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4 mt-4">
                 {error && (
@@ -147,8 +149,8 @@ export function SignInCard() {
                     className="focus:border-[#2C3E50]"
                   />
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-[#2C3E50] hover:bg-[#34495E]"
                   disabled={isLoading}
                 >
@@ -156,6 +158,7 @@ export function SignInCard() {
                 </Button>
               </form>
             </TabsContent>
+
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4 mt-4">
                 {error && (
@@ -208,8 +211,8 @@ export function SignInCard() {
                     className="focus:border-[#2C3E50]"
                   />
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-[#2C3E50] hover:bg-[#34495E]"
                   disabled={isLoading}
                 >

@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/dylangroos/nhlplayoffsheets.com/server/models"
@@ -54,9 +55,15 @@ func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get admin email from environment variable
+	adminEmail := os.Getenv("ADMIN_EMAIL")
+	if adminEmail == "" {
+		adminEmail = "hawkins.groos@gmail.com" // Default for development
+	}
+
 	// Check if user is admin
 	email, ok := claims["email"].(string)
-	if !ok || email != "hawkins.groos@gmail.com" {
+	if !ok || email != adminEmail {
 		http.Error(w, "Unauthorized", http.StatusForbidden)
 		return
 	}
@@ -70,7 +77,7 @@ func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	// Set admin status for the admin user
 	for i := range users {
-		users[i].IsAdmin = users[i].Email == "hawkins.groos@gmail.com"
+		users[i].IsAdmin = users[i].Email == adminEmail
 	}
 
 	// Return users as JSON

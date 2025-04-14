@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { UnderConstruction } from "../components/UnderConstruction";
 import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
-import { signOut, isAdmin, getAllUsers } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -22,10 +22,10 @@ interface User {
 
 export const Dashboard = () => {
   const navigate = useNavigate();
+  const { isAdmin: isAdminUser, signOut } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const isAdminUser = isAdmin();
 
   useEffect(() => {
     if (isAdminUser) {
@@ -37,7 +37,12 @@ export const Dashboard = () => {
 
   const loadUsers = async () => {
     try {
-      const data = await getAllUsers();
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await response.json();
       setUsers(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load users');

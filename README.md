@@ -1,146 +1,199 @@
 # NHL Playoff Sheets
 
-A modern playoff pool platform for NHL fans, built with Go, SQLite, and React.
+A web application for managing NHL playoff pools and predictions.
 
-## 🏒 Overview
+## Features
 
-NHL Playoff Sheets is a web application that lets hockey fans create and manage playoff pools. Track your picks, compete with friends, and follow the NHL playoffs in real-time.
+- User authentication (signup/signin)
+- Admin dashboard for user management
+- Under construction page for upcoming features
+- More features coming soon!
 
-## 🏗️ Tech Stack
+## Tech Stack
 
-### Backend (Go)
-- **Framework**: Native Go HTTP server
-- **Database**: SQLite with `database/sql`
-- **NHL Data**: Integration with NHL's public API
-- **Authentication**: JWT-based auth system
-- **Environment**: Uses `.env` for configuration
+- Frontend:
+  - React with TypeScript
+  - Vite for build tooling
+  - TailwindCSS for styling
+  - Framer Motion for animations
+  - shadcn/ui for components
 
-### Frontend (React + Vite)
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
-- **Fonts**: Inter via Fontsource
+- Backend:
+  - Go
+  - Chi router
+  - GORM with SQLite
+  - JWT for authentication
 
-### Infrastructure
-- **Hosting**: Cloudflare Tunnel for secure deployment
-- **Database**: SQLite for simple, reliable data storage
-- **Caching**: In-memory caching for NHL API responses
-- **Development**: Hot-reloading for both Go and React
+## Development Setup
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Go 1.21+
-- Node.js 18+
-- SQLite 3
-- ImageMagick (for asset generation)
-
-### Development Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/nhlplayoffsheets.com.git
-   cd nhlplayoffsheets.com
-   ```
-
-2. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-3. **Install frontend dependencies**
-   ```bash
-   cd client
-   npm install
-   ```
-
-4. **Generate frontend assets**
-   ```bash
-   chmod +x scripts/generate-favicons.sh
-   ./scripts/generate-favicons.sh
-   ```
-
-5. **Start the development servers**
-   ```bash
-   # Terminal 1: Frontend
-   cd client
-   npm run dev
-
-   # Terminal 2: Backend
-   go run cmd/server/main.go
-   ```
-
-### Production Deployment
-
-Use the Makefile commands for easy deployment:
-
+1. Clone the repository:
 ```bash
-make deploy  # Builds and serves the frontend
+git clone https://github.com/yourusername/nhlplayoffsheets.com.git
+cd nhlplayoffsheets.com
 ```
 
-## 📁 Project Structure
+2. Install frontend dependencies:
+```bash
+cd client
+npm install
+```
+
+3. Install backend dependencies:
+```bash
+cd server
+go mod download
+```
+
+4. Create environment files:
+
+Frontend (.env in client directory):
+```env
+# For local development
+VITE_API_URL=http://localhost:8080
+# For production
+# VITE_API_URL=https://api.nhlplayoffsheets.com
+VITE_ADMIN_EMAIL=your.email@example.com
+```
+
+Backend (.env in server directory):
+```env
+PORT=8080
+JWT_SECRET=your-secret-key-here
+ADMIN_EMAIL=your.email@example.com
+```
+
+5. Run the development servers:
+```bash
+# In the root directory
+make deploy
+```
+
+This will start:
+- Frontend on http://localhost:3000
+- Backend on http://localhost:8080
+
+## Production Deployment
+
+### Frontend Deployment
+
+1. Update the frontend environment variables:
+```env
+VITE_API_URL=https://api.nhlplayoffsheets.com  # Your public API URL
+VITE_ADMIN_EMAIL=your.email@example.com
+```
+
+2. Build and deploy:
+```bash
+make build  # Builds the frontend
+```
+
+3. Serve the `client/dist` directory using your preferred hosting service (e.g., Netlify, Vercel, or your own server)
+
+### Backend Deployment
+
+1. Update the backend environment variables:
+```env
+PORT=8080
+JWT_SECRET=your-secure-production-secret
+ADMIN_EMAIL=your.email@example.com
+```
+
+2. Configure your domain:
+   - Set up DNS records for your API domain (e.g., api.nhlplayoffsheets.com)
+   - Configure SSL certificates for your domain
+   - Update the CORS settings in `server/main.go` if using additional domains
+
+3. Build and run the server:
+```bash
+make build-server
+./server
+```
+
+4. For production hosting, consider:
+   - Using a process manager (e.g., systemd, PM2)
+   - Setting up a reverse proxy (e.g., Nginx)
+   - Implementing proper logging
+   - Setting up monitoring
+   - Using a production-grade database
+
+### Using Cloudflare Tunnel (Optional)
+
+To expose your local server to the internet securely:
+
+1. Install cloudflared
+2. Configure a tunnel:
+```bash
+cloudflared tunnel create nhlplayoffsheets
+```
+
+3. Create a configuration file (config.yml):
+```yaml
+tunnel: your-tunnel-id
+credentials-file: /path/to/credentials.json
+ingress:
+  - hostname: api.nhlplayoffsheets.com
+    service: http://localhost:8080
+  - service: http_status:404
+```
+
+4. Run the tunnel:
+```bash
+cloudflared tunnel run nhlplayoffsheets
+```
+
+5. Update your DNS records to point to the tunnel
+
+## Local Development Commands
+
+The application uses a Makefile for common tasks:
+
+- `make deploy` - Builds and runs both frontend and server
+- `make build` - Builds the frontend only
+- `make build-server` - Builds the server only
+- `make serve` - Serves the frontend only
+- `make run-server` - Runs the server only
+
+## Project Structure
 
 ```
 .
-├── client/                 # Frontend React application
-│   ├── public/            # Static assets
-│   ├── src/               # React source code
-│   └── scripts/           # Asset generation scripts
-├── cmd/                   # Go command-line applications
-│   └── server/           # Main server entry point
-├── internal/              # Private Go packages
-│   ├── api/              # API handlers
-│   ├── db/               # Database operations
-│   └── nhl/              # NHL API integration
-├── migrations/            # SQLite database migrations
-└── .env                  # Environment configuration
+├── client/             # Frontend React application
+│   ├── src/
+│   ├── public/
+│   └── package.json
+├── server/            # Backend Go application
+│   ├── handlers/
+│   ├── models/
+│   └── main.go
+├── Makefile          # Build and deployment scripts
+└── README.md
 ```
 
-## 🔄 Data Flow
+## Environment Variables
 
-1. **NHL Data Integration**
-   - Periodic polling of NHL's public API
-   - Real-time game updates
-   - Caching layer for API responses
+### Frontend (client/.env)
 
-2. **User Interactions**
-   - JWT-based authentication
-   - Real-time playoff bracket updates
-   - Pool management and scoring
+| Variable | Description | Default |
+|----------|-------------|---------|
+| VITE_API_URL | Backend API URL | http://localhost:8080 |
+| VITE_ADMIN_EMAIL | Admin user email | - |
 
-3. **Database Operations**
-   - SQLite for persistent storage
-   - Efficient querying for standings
-   - Transaction support for data integrity
+### Backend (server/.env)
 
-## 🛠️ Development Commands
+| Variable | Description | Default |
+|----------|-------------|---------|
+| PORT | Server port | 8080 |
+| JWT_SECRET | JWT signing secret | - |
+| ADMIN_EMAIL | Admin user email | - |
 
-```bash
-# Frontend Development
-npm run dev          # Start Vite dev server
-npm run build        # Build for production
-npm run preview      # Preview production build
+## Contributing
 
-# Backend Development
-go run cmd/server/main.go  # Start Go server
-go test ./...             # Run all tests
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-# Asset Generation
-./client/scripts/generate-favicons.sh  # Generate favicon assets
-```
-
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 🔗 Links
-
-- [Production Site](https://nhlplayoffsheets.com)
-- [NHL API Documentation](https://statsapi.web.nhl.com/api/v1/configurations)
-- [Go Documentation](https://pkg.go.dev)
