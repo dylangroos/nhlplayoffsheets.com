@@ -79,7 +79,9 @@ func main() {
 	corsMiddleware := cors.New(cors.Options{
 		AllowedOrigins: []string{
 			"https://nhlplayoffsheets.com",
+			"http://nhlplayoffsheets.com",
 			"https://api.nhlplayoffsheets.com",
+			"http://api.nhlplayoffsheets.com",
 			"http://localhost:5174",
 			"http://localhost:3000",
 			"http://localhost:3001",
